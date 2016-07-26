@@ -1,5 +1,5 @@
 #include "lightshow.h"// This #include statement was automatically added by the Particle IDE.
-#include "neopixel/neopixel.h"
+#include "neopixel.h"
 
 #define MIN_SPEED 0
 #define MAX_FILTERS 10
@@ -40,7 +40,7 @@ void LightShow::update() {
         transition->update();
     }
 }
-    
+
 void LightShow::useTransition(Transition *transition_) {
     transition = transition_;
     transition->lightshow = this;
