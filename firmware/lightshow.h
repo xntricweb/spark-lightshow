@@ -2,7 +2,7 @@
 #define XWEB_LIGHT_SHOW_H_
 
 #include "application.h"
-#include "neopixel/neopixel.h"
+#include "neopixel.h"
 
 class LightShow;
 
@@ -34,21 +34,21 @@ public:
     static void toColor(uint8_t r, uint8_t g, uint8_t b, uint32_t *color);
     static uint32_t toColor(uint8_t r, uint8_t g, uint8_t b);
     static void toRGB(uint32_t color, uint8_t *r, uint8_t *g, uint8_t *b);
-    
+
     void setup();
     void update();
-    
+
     void useTransition(Transition *transition_);
     void useColorPicker(ColorPicker *picker_);
     ColorPicker *getColorPicker();
     void addColorFilter(ColorFilter *filter_);
-    
+
     void draw(uint16_t pixel, uint8_t r, uint8_t g, uint8_t b);
     void paint();
-    
+
     void repeat(bool enabled);
     void applyFilters(uint8_t *r, uint8_t *g, uint8_t *b);
-    
+
     void speed(uint8_t value);
     void transitionDone();
     uint16_t pixelCount();
@@ -57,13 +57,13 @@ private:
     bool ready();
     void bump_update();
     Adafruit_NeoPixel strip;
-    
+
     Transition *transition = NULL;
     ColorPicker *picker = NULL;
-    
+
     size_t filter_count;
     ColorFilter **filter = NULL;
-    
+
     bool repeat_ = false;
     bool active = true;
     uint8_t speed_;

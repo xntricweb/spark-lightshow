@@ -1,12 +1,3 @@
-// This #include statement was automatically added by the Particle IDE.
-#include "color-filters.h"
-
-// This #include statement was automatically added by the Particle IDE.
-#include "color-pickers.h"
-
-// This #include statement was automatically added by the Particle IDE.
-#include "transitions.h"
-
 #define PIXEL_COUNT 1
 #define PIXEL_PORT D2
 #define PIXEL_TYPE WS2812B
@@ -14,11 +5,10 @@
 // This #include statement was automatically added by the Particle IDE.
 #include "blynk/blynk.h"
 
-// This #include statement was automatically added by the Particle IDE.
-#include "lightshow.h"
-#include "transitions.h"
-#include "color-pickers.h"
-#include "color-filters.h"
+#include "lightshow/lightshow.h"
+#include "lightshow/transitions.h"
+#include "lightshow/color-pickers.h"
+#include "lightshow/color-filters.h"
 
 char auth_token[] = "YOUR_AUTH_TOKEN_HERE";
 
@@ -42,7 +32,7 @@ void setup() {
     lightshow.speed(100);
     // fade.from(255, 0, 255);
     // fade.to(0, 255, 0);
-    
+
     lightshow.addColorFilter(&brightness);
     lightshow.addColorFilter(&noise);
     lightshow.useTransition(&wheel);
