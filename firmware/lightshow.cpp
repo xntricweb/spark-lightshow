@@ -14,10 +14,6 @@ LightShow::~LightShow() {
     free(filter);
 }
 
-void LightShow::setup() {
-    strip.begin();
-}
-
 uint32_t LightShow::toColor(uint8_t r, uint8_t g, uint8_t b) {
     uint32_t color = 0;
     toColor(r, g, b, &color);
@@ -32,6 +28,10 @@ void LightShow::toRGB(uint32_t color, uint8_t *r, uint8_t *g, uint8_t *b) {
     *r = color >> 16;
     *g = color >> 8;
     *b = color;
+}
+
+void LightShow::begin() {
+    strip.begin();
 }
 
 void LightShow::update() {

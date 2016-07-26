@@ -7,7 +7,6 @@
 #include "lightshow/lightshow.h"
 #include "lightshow/transitions.h"
 #include "lightshow/color-pickers.h"
-#include "lightshow/color-filters.h"
 
 // create the lightshow
 LightShow lightshow(PIXEL_COUNT, PIXEL_PORT, PIXEL_TYPE);
@@ -20,11 +19,9 @@ WheelTransition wheel(255);
 // will supply rainbow colors to the transition
 RainbowColorPicker rainbow;
 
-bool blynk_ready = false;
-
 void setup() {
     // setup the lightshow
-    lightshow.setup();
+    lightshow.begin();
 
     // set the transition speed of the lightshow
     lightshow.speed(LIGHTSHOW_SPEED);

@@ -46,7 +46,7 @@ bool blynk_ready = false;
 
 void setup() {
     // setup the lightshow
-    lightshow.setup();
+    lightshow.begin();
 
     // set the transition speed of the lightshow
     lightshow.speed(100);
