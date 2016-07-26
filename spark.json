@@ -1,0 +1,7 @@
+{
+  "name": "lightshow",
+  "author": "Jeremy Calloway <xntricweb@gmail.com>",
+  "license": "MIT",
+  "version": "0.0.1",
+  "description": "A neopixel helper library to show off some pretty colors."
+}
