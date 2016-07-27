@@ -2,80 +2,30 @@
 #define PIXEL_PORT D2
 #define PIXEL_TYPE WS2812B
 
-// This #include statement was automatically added by the Particle IDE.
+
+#define LOCAL_IDE
+
+/**
+ * UNCOMMENT THE FOLLOWING LINE AND UPDATE YOUR AUTH TOKEN TO
+ * ENABLE BLYNK FEATURES.
+ *
+ * No blynk features will make it passed the preprocessor till the
+ * the auth token is set to prevent build errors on the example.
+*/
+
+//#define BLYNK_AUTH_TOKEN "YOUR_AUTH_TOKEN_HERE"
+
+#ifdef BLYNK_AUTH_TOKEN
+#define BLYNK_WRAP(STUFF) STUFF
+#else
+#define BLYNK_WRAP(NO_STUFF)
+#endif
+
+BLYNK_WRAP(
 #include "blynk/blynk.h"
 
-// import the components
-#include "lightshow/lightshow.h"
-#include "lightshow/transitions.h"
-#include "lightshow/color-pickers.h"
-#include "lightshow/color-filters.h"
-
-// put your Blynk auth token here
-char auth_token[] = "YOUR_AUTH_TOKEN_HERE";
-
-// create the lightshow
-LightShow lightshow(PIXEL_COUNT, PIXEL_PORT, PIXEL_TYPE);
-
-// create some color filters
-// allows control of the brightness
-BrightnessColorFilter brightness;
-// adds noise to the output color
-NoiseColorFilter noise;
-
-// create various transitions
-// ImmediateTransition sets all of the pixels in one cycle
-ImmediateTransition immediate;
-// WheelTransition sets all of the pixels in one cycle, but shifts the pixels
-// within a larger window. It's used to produce the rainbow effect from the
-// neopixel examples
-WheelTransition wheel(255);
-// Sets one pixels color per cycle
-WipeTransition wipe;
-
-// create color pickers
-// always supplies the specified color to the transition effect
-// causes all of the pixels to be set to the same color
-SolidColorPicker solid;
-// will supply rainbow colors to the transition
-RainbowColorPicker rainbow;
-// will fade to a random color during the transition
-FadeRandomColorPicker fade;
-
+char auth_token[] = BLYNK_AUTH_TOKEN;
 bool blynk_ready = false;
-
-void setup() {
-    // setup the lightshow
-    lightshow.begin();
-
-    // set the transition speed of the lightshow
-    lightshow.speed(100);
-
-    // add the color filters to the lightshow
-    // filters are not required and may be left commented out
-    lightshow.addColorFilter(&brightness);
-    lightshow.addColorFilter(&noise);
-
-    // set the initial transition driver
-    lightshow.useTransition(&wheel);
-    // set the initial color picker
-    lightshow.useColorPicker(&fade);
-
-    // tell the light show to repeat after the transition is done
-    lightshow.repeat(true);
-}
-
-void loop() {
-    //run blynk, initialize if required
-    if(blynk_ready) {
-        Blynk.run();
-    } else if(Particle.connected()) {
-        Blynk.begin(auth_token);
-        blynk_ready = true;
-    }
-    // update the lightshow
-    lightshow.update();
-}
 
 // V1 is a blynk menu containing the following options in this order
 // Rainbow
@@ -122,13 +72,13 @@ BLYNK_WRITE(V2) {  // Custom Color
     );
 }
 
-// V3 is a brightness slider 0-255
+// V3 is a brightness slider 0 - 255
 BLYNK_WRITE(V3) {  // Brightnesss
     // set the brightness of the brightness filter
     brightness.set(param.asInt() & 255);
 }
 
-// V4 is a speed slider 0-255
+// V4 is a speed slider 255 - 0
 BLYNK_WRITE(V4) {  // Speed
     // set the speed
     lightshow.speed(param.asInt() & 255);
@@ -137,4 +87,80 @@ BLYNK_WRITE(V4) {  // Speed
 // V5 is a noise slider 0 - 255
 BLYNK_WRITE(V5) {  // Brightnesss
     noise.setAmplitude(param.asInt() & 255);
+})
+
+// import the lightshow components
+#ifndef LOCAL_IDE
+#include "lightshow/lightshow.h"
+#include "lightshow/transitions.h"
+#include "lightshow/color-pickers.h"
+#include "lightshow/color-filters.h"
+#else
+#include "lightshow.h"
+#include "transitions.h"
+#include "color-pickers.h"
+#include "color-filters.h"
+#endif
+
+
+// create the lightshow
+LightShow lightshow(PIXEL_COUNT, PIXEL_PORT, PIXEL_TYPE);
+
+// create some color filters
+// allows control of the brightness
+BrightnessColorFilter brightness;
+// adds noise to the output color
+NoiseColorFilter noise;
+
+// create various transitions
+// ImmediateTransition sets all of the pixels in one cycle
+ImmediateTransition immediate;
+// WheelTransition sets all of the pixels in one cycle, but shifts the pixels
+// within a larger window. It's used to produce the rainbow effect from the
+// neopixel examples
+WheelTransition wheel(255);
+// Sets one pixels color per cycle
+WipeTransition wipe;
+
+// create color pickers
+// always supplies the specified color to the transition effect
+// causes all of the pixels to be set to the same color
+SolidColorPicker solid;
+// will supply rainbow colors to the transition
+RainbowColorPicker rainbow;
+// will fade to a random color during the transition
+FadeRandomColorPicker fade;
+
+void setup() {
+    // setup the lightshow
+    lightshow.begin();
+
+    // set the transition speed of the lightshow
+    lightshow.speed(100);
+
+    // add the color filters to the lightshow
+    // filters are not required and may be left commented out
+    lightshow.addColorFilter(&brightness);
+    lightshow.addColorFilter(&noise);
+
+    // set the initial transition driver
+    lightshow.useTransition(&wheel);
+    // set the initial color picker
+    lightshow.useColorPicker(&fade);
+
+    // tell the light show to repeat after the transition is done
+    lightshow.repeat(true);
+}
+
+void loop() {
+    BLYNK_WRAP(
+    //run blynk, initialize if required
+    if(blynk_ready) {
+        Blynk.run();
+    } else if(Particle.connected()) {
+        Blynk.begin(auth_token);
+        blynk_ready = true;
+    })
+    // update the lightshow
+    lightshow.update();
 }

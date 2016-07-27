@@ -21,11 +21,11 @@ void NoiseColorFilter::setAmplitude(uint8_t value) {
 }
 
 uint8_t NoiseColorFilter::addNoise(uint8_t c) {
-    int16_t noise = c & 1? 
-        c - random(amplitude):   
+    int16_t noise = c & 1?
+        c - random(amplitude):
         c + random(amplitude);
-    return 
-      noise < 0? 0 
+    return
+      noise < 0? 0
     : noise > 255? 255
     : noise;
 }

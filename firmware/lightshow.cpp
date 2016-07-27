@@ -4,6 +4,14 @@
 #define MIN_SPEED 0
 #define MAX_FILTERS 10
 
+namespace xweb {
+
+pixel_t red_pixel(rgb_t pixel) { return pixel >> 16; }
+pixel_t green_pixel(rgb_t pixel) { return pixel >> 8; }
+pixel_t blue_pixel(rgb_t pixel) { return pixel; }
+rgb_t rgb(pixel_t r, pixel_t g, pixel_t b) {
+   return (rgb_t)r << 16 | (rgb_t)g << 8 | b;
+}
 
 LightShow::LightShow(uint16_t n, uint8_t p, uint8_t t)
 : strip(n, p, t) {
@@ -14,46 +22,32 @@ LightShow::~LightShow() {
     free(filter);
 }
 
-uint32_t LightShow::toColor(uint8_t r, uint8_t g, uint8_t b) {
-    uint32_t color = 0;
-    toColor(r, g, b, &color);
-    return color;
-}
-
-void LightShow::toColor(uint8_t r, uint8_t g, uint8_t b, uint32_t *color) {
-    *color = ((uint32_t)r << 16) | ((uint32_t)g << 8) | (b);
-}
-
-void LightShow::toRGB(uint32_t color, uint8_t *r, uint8_t *g, uint8_t *b) {
-    *r = color >> 16;
-    *g = color >> 8;
-    *b = color;
-}
-
-void LightShow::begin() {
-    strip.begin();
-}
-
 void LightShow::update() {
-    if(ready() && active && transition && picker) {
+    if(ready() && transition && !transition->done && selector) {
         bump_update();
         transition->update();
+        if(transition->done && repeat) {
+            transition->reset();
+        }
     }
 }
 
-void LightShow::useTransition(Transition *transition_) {
-    transition = transition_;
-    transition->lightshow = this;
-    active = true;
+void LightShow::setTransition(Transition &transition_) {
+    transition = &transition_;
+    transition.setLightShow(this);
+    transition->reset();
 }
 
-void LightShow::useColorPicker(ColorPicker *picker_) {
-    picker = picker_;
-    picker->lightshow = this;
+Transition &LightShow::getTransition() {
+    return *transition;
 }
 
-ColorPicker *LightShow::getColorPicker() {
-    return picker;
+void LightShow::setColorSelector(ColorSelector &selector_) {
+    selector = selector_;
+}
+
+ColorSelector &LightShow::getColorSelector() {
+    return *selector;
 }
 
 void LightShow::addColorFilter(ColorFilter *filter_) {
@@ -63,6 +57,10 @@ void LightShow::addColorFilter(ColorFilter *filter_) {
     } else {
         //TODO(xntricweb): should probably implement some kind of error handling in the future
     }
+}
+
+ColorFilter &getColorFilter(size_t index) {
+    return *filter[index];
 }
 
 void LightShow::draw(uint16_t pixel, uint8_t r, uint8_t g, uint8_t b) {
@@ -82,11 +80,6 @@ void LightShow::speed(uint8_t value) {
     speed_ = value < MIN_SPEED? MIN_SPEED : value;
 }
 
-void LightShow::transitionDone() {
-    if(!repeat_)
-        active = false;
-}
-
 uint16_t LightShow::pixelCount() {
     return strip.numPixels();
 }
@@ -97,10 +90,24 @@ void LightShow::applyFilters(uint8_t *r, uint8_t *g, uint8_t *b) {
     }
 }
 
-bool LightShow::ready() {
+void LightShow::transition_done() {
+    if(!repeat_)
+        active = false;
+}
+
+bool LightShow::ready_for_update() {
     return millis() > next_update;
 }
 
 void LightShow::bump_update() {
     next_update = millis() + speed_;
 }
+
+LightShow &LightShowHelper::lightshow() {
+    return *lightshow_;
+}
+void LightShowHelper::setLightShow(LightShow *lightshow) {
+    lightshow_ = *lightshow;
+}
+
+}  // namespace xweb
